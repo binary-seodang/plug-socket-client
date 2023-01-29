@@ -52,3 +52,5 @@
 # subdirectory, as its owners are left empty.
 # ex) /apps/ @octocat
 # ex) /apps/github
+
+* @binary-seodang/members
