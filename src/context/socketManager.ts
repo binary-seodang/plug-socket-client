@@ -1,15 +1,9 @@
 import { createContext } from 'react'
 import { Manager } from 'socket.io-client'
 
-console.log(import.meta.env)
-
-export const manager = new Manager({
+export const manager = new Manager(import.meta.env.VITE_SOCKET_SERVER_URL, {
   path: '/',
-  protocols: 'http',
-  host: 'localhost',
-  port: 3050,
   transports: ['websocket'],
 })
 
-// const import.meta.env.
 export const SocketManager = createContext(manager)

@@ -23,17 +23,13 @@ const useSocket: useSocketHook = ({ url, namespace, autoConnect = true }) => {
   useLayoutEffect(() => {
     const newSocket = manager.socket(url)
     if (autoConnect) {
-      console.log(autoConnect, 'autoConnect')
-      const soc = newSocket.connect()
-      console.log(newSocket.connected, 'newSocket.connected`')
-      console.log(soc.connected, 'newSocket.connected`')
+      newSocket.connect()
     }
     setSocket(() => newSocket)
     pending.current = false
 
     return () => {
       if (newSocket.connected) {
-        console.log(pending.current, 'pending.current')
         newSocket.disconnect()
       }
     }

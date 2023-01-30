@@ -1,6 +1,7 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import useSocket from '../hooks/useSocket'
+import useSocket from 'hooks/useSocket'
+import { useNavigate } from 'react-router-dom'
 
 interface JoinRoomInput {
   roomName: string
@@ -13,9 +14,10 @@ const Home = () => {
   })
   const [rooms, setRooms] = useState<string[] | []>([])
   const { register, handleSubmit } = useForm<JoinRoomInput>()
+  const navigate = useNavigate()
   const onJoinRoom = useCallback(
     ({ roomName }: JoinRoomInput) => {
-      socket?.emit('join_room', roomName)
+      navigate(roomName)
     },
     [socket?.on],
   )
@@ -23,13 +25,11 @@ const Home = () => {
   useEffect(() => {
     if (socket) {
       socket.on('room_change', (data) => setRooms(data))
-      socket.on('welcome', (data) => console.log('welcome', data))
       if (!isConnected) {
         socket.connect()
       }
     }
   }, [isPending])
-  console.log(rooms)
   return (
     <>
       <form onSubmit={handleSubmit(onJoinRoom)}>
@@ -40,6 +40,19 @@ const Home = () => {
         />
         <input type='submit' value='join' />
       </form>
+      <section>
+        {rooms.length ? (
+          <ul>
+            {rooms.map((room) => (
+              <li key={room} onClick={() => onJoinRoom({ roomName: room })}>
+                {room}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>Not found.</>
+        )}
+      </section>
     </>
   )
 }
