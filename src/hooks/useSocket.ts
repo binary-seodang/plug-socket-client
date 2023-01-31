@@ -9,7 +9,7 @@ interface SocketProps {
 }
 
 interface SocketHookReturnedValue {
-  socket: io.Socket | undefined
+  socket: io.Socket | null
   isConnected: boolean
   isPending: boolean
 }
@@ -17,7 +17,7 @@ interface SocketHookReturnedValue {
 type useSocketHook = (args: SocketProps) => SocketHookReturnedValue
 const useSocket: useSocketHook = ({ url, namespace, autoConnect = true }) => {
   const manager = useContext(SocketManager)
-  const [socket, setSocket] = useState<io.Socket>()
+  const [socket, setSocket] = useState<io.Socket | null>(null)
   const pending = useRef(true)
 
   useLayoutEffect(() => {
