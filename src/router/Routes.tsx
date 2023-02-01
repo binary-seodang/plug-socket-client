@@ -1,11 +1,10 @@
-import { manager, SocketManager } from 'context/socketManager'
+import SocketProvider from 'context/socketManager'
 import SocketLayout from 'layout/SocketLayout'
 import {
   createRoutesFromElements,
   Route,
   createBrowserRouter,
   RouterProvider,
-  Outlet,
 } from 'react-router-dom'
 import Home from 'screen/Home'
 import Room from 'screen/Room'
@@ -20,9 +19,9 @@ const router = createBrowserRouter(
 )
 const Router = () => {
   return (
-    <SocketManager.Provider value={manager}>
+    <SocketProvider>
       <RouterProvider router={router} />
-    </SocketManager.Provider>
+    </SocketProvider>
   )
 }
 

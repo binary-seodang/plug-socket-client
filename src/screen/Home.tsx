@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { SocketContext } from 'context/socketManager'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import useSocket from 'hooks/useSocket'
 import { useNavigate } from 'react-router-dom'
 
 interface JoinRoomInput {
@@ -8,10 +8,9 @@ interface JoinRoomInput {
 }
 
 const Home = () => {
-  const { socket, isConnected, isPending } = useSocket({
-    url: '/',
-    autoConnect: false,
-  })
+  const { socket } = useContext(SocketContext)
+
+  useEffect(() => {}, [])
   const [rooms, setRooms] = useState<string[] | []>([])
   const { register, handleSubmit } = useForm<JoinRoomInput>()
   const navigate = useNavigate()
@@ -25,11 +24,12 @@ const Home = () => {
   useEffect(() => {
     if (socket) {
       socket.on('room_change', (data) => setRooms(data))
-      if (!isConnected) {
+      if (!socket.connected) {
         socket.connect()
       }
     }
-  }, [isPending])
+  }, [socket?.connected])
+
   return (
     <>
       <form onSubmit={handleSubmit(onJoinRoom)}>
