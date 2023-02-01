@@ -6,13 +6,21 @@ import { useNavigate } from 'react-router-dom'
 interface JoinRoomInput {
   roomName: string
 }
+interface NicknameInput {
+  nickname: string
+}
 
 const Home = () => {
   const { socket } = useContext(SocketContext)
 
   useEffect(() => {}, [])
   const [rooms, setRooms] = useState<string[] | []>([])
-  const { register, handleSubmit } = useForm<JoinRoomInput>()
+  const { register: roomRegister, handleSubmit: roomSubmit } = useForm<JoinRoomInput>()
+  const { register: nicknameRegister, handleSubmit: nicknameSubmit } = useForm<NicknameInput>({
+    defaultValues: {
+      nickname: localStorage.getItem('plug_nickname') || '',
+    },
+  })
   const navigate = useNavigate()
   const onJoinRoom = useCallback(
     ({ roomName }: JoinRoomInput) => {
@@ -21,6 +29,18 @@ const Home = () => {
     [socket?.on],
   )
 
+  const onSetNickname = useCallback(
+    ({ nickname }: NicknameInput) => {
+      socket?.emit('set_nickname', nickname, (nickname: string) => {
+        if (nickname) {
+          localStorage.setItem('plug_nickname', nickname)
+        } else {
+          // todo
+        }
+      })
+    },
+    [socket?.on],
+  )
   useEffect(() => {
     if (socket) {
       socket.on('room_change', (data) => setRooms(data))
@@ -32,9 +52,18 @@ const Home = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onJoinRoom)}>
+      <form onSubmit={nicknameSubmit(onSetNickname)}>
         <input
-          {...register('roomName', {
+          placeholder='닉네임을 설정해주세요'
+          {...nicknameRegister('nickname', {
+            required: '필수',
+          })}
+        />
+        <input type='submit' value='submit' />
+      </form>
+      <form onSubmit={roomSubmit(onJoinRoom)}>
+        <input
+          {...roomRegister('roomName', {
             required: '필수',
           })}
         />
