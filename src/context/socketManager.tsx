@@ -1,13 +1,10 @@
-import { createContext, FC, ReactNode, useRef } from "react"
-import { Manager as M, Socket } from "socket.io-client"
-import { SocketOptions } from "socket.io-client/build/esm/socket"
+import { createContext, FC, ReactNode, useRef } from 'react'
+import { Manager as M, Socket } from 'socket.io-client'
+import { SocketOptions } from 'socket.io-client/build/esm/socket'
 
 class Manager extends M {
   private sockets: { [key: string]: Socket } = {}
-  create_socket(
-    nsp: string,
-    opts?: Partial<SocketOptions> | undefined
-  ): Socket {
+  create_socket(nsp: string, opts?: Partial<SocketOptions> | undefined): Socket {
     if (this.sockets.hasOwnProperty(nsp)) {
       return this.sockets[nsp]
     }
@@ -23,8 +20,8 @@ class Manager extends M {
   }
 }
 export const manager = new Manager(import.meta.env.VITE_SOCKET_SERVER_URL, {
-  path: "/",
-  transports: ["websocket"],
+  path: '/',
+  transports: ['websocket'],
 })
 
 export const SocketContext = createContext<{
@@ -35,7 +32,7 @@ export const SocketContext = createContext<{
   manager,
 })
 const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const socket = useRef(manager.create_socket("/"))
+  const socket = useRef(manager.create_socket('/'))
   return (
     <SocketContext.Provider value={{ socket: socket.current, manager }}>
       {children}
