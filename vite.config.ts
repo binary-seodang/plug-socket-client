@@ -28,6 +28,10 @@ export default ({ mode }) => {
           find: 'layout',
           replacement: path.resolve(__dirname, 'src/layout'),
         },
+        {
+          find: 'libs',
+          replacement: path.resolve(__dirname, 'src/libs'),
+        },
       ],
     },
   })

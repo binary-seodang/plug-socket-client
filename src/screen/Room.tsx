@@ -3,11 +3,14 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SocketContext } from 'context/socketManager'
 import { Welcome } from 'types/dtos/socketResponse.dto'
+import useSocket from 'hooks/useSocket'
 
 const Room = () => {
   const { roomName } = useParams()
   const navigate = useNavigate()
-  const { socket } = useContext(SocketContext)
+  const { socket } = useSocket({
+    nsp: '/',
+  })
   const [userList, setUserList] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const myVideo = useRef<HTMLVideoElement>(null)
@@ -89,7 +92,7 @@ const Room = () => {
 
   useEffect(() => {
     if (socket && myPeer && !socket.hasListeners('ice')) {
-      socket.on('ice', (ice) => {
+      socket.listen('ice', (ice: RTCIceCandidate) => {
         console.log('received candidate')
         addIceCandidate(ice)
       })
@@ -97,16 +100,16 @@ const Room = () => {
   }, [socket, myPeer])
   useLayoutEffect(() => {
     if (socket && roomName) {
-      !socket.hasListeners('leave') &&
-        socket.on('leave', ({ userList: users }: Pick<Welcome, 'userList'>) => {
-          setUserList(users)
-        })
+      socket.listen('leave', ({ userList: users }: Pick<Welcome, 'userList'>) => {
+        console.log('leave user')
+        setUserList(users)
+      })
       socket.emit('join_room', roomName, ({ nickname, userList: users, ok }: Welcome) => {
         if (!ok) {
           navigate('/')
           return
         }
-        loading && setUserList(users)
+        !loading && setUserList(users)
       })
 
       getMedia()
@@ -128,10 +131,11 @@ const Room = () => {
   }, [])
 
   useEffect(() => {
-    if (socket && !socket.hasListeners('welcome') && myPeer) {
-      socket.on('welcome', ({ nickname, userList: users }: Welcome) => {
+    if (socket && myPeer) {
+      socket.listen('welcome', ({ nickname, userList: users }: Welcome) => {
+        console.log(nickname, 'welcome')
         setUserList(users)
-        sendOffer()
+        // sendOffer()
       })
     }
   }, [myPeer, socket])

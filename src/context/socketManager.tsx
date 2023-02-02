@@ -1,24 +1,7 @@
+import { Manager } from 'libs/Manager'
 import { createContext, FC, ReactNode, useRef } from 'react'
-import { Manager as M, Socket } from 'socket.io-client'
-import { SocketOptions } from 'socket.io-client/build/esm/socket'
+import { Socket } from 'socket.io-client'
 
-class Manager extends M {
-  private sockets: { [key: string]: Socket } = {}
-  create_socket(nsp: string, opts?: Partial<SocketOptions> | undefined): Socket {
-    if (this.sockets.hasOwnProperty(nsp)) {
-      return this.sockets[nsp]
-    }
-    const socket = this.socket(nsp, opts)
-    socket.listen = (ev, lisnter) => {
-      if (!socket.hasListeners(ev)) {
-        socket.on(ev, lisnter)
-      }
-      return socket
-    }
-    this.sockets[nsp] = socket
-    return socket
-  }
-}
 export const manager = new Manager(import.meta.env.VITE_SOCKET_SERVER_URL, {
   path: '/',
   transports: ['websocket'],
