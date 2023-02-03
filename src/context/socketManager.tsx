@@ -3,8 +3,8 @@ import { createContext, FC, ReactNode, useRef } from 'react'
 import { Socket } from 'socket.io-client'
 
 export const manager = new Manager(import.meta.env.VITE_SOCKET_SERVER_URL, {
-  path: '/',
   transports: ['websocket'],
+  path: '',
 })
 
 export const SocketContext = createContext<{
@@ -15,11 +15,8 @@ export const SocketContext = createContext<{
   manager,
 })
 const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const socket = useRef(manager.create_socket('/'))
   return (
-    <SocketContext.Provider value={{ socket: socket.current, manager }}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={{ socket: null, manager }}>{children}</SocketContext.Provider>
   )
 }
 export default SocketProvider

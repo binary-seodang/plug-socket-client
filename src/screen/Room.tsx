@@ -9,7 +9,7 @@ const Room = () => {
   const { roomName } = useParams()
   const navigate = useNavigate()
   const { socket } = useSocket({
-    nsp: '/',
+    nsp: '/workspace',
   })
   const [userList, setUserList] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
@@ -141,7 +141,7 @@ const Room = () => {
   }, [myPeer, socket])
   return (
     <div>
-      <video autoPlay ref={myVideo}></video>
+      <video ref={myVideo}></video>
       <video autoPlay ref={peerVideo}></video>
       {userList.map((user, index) => (
         <div key={user + '' + index}>

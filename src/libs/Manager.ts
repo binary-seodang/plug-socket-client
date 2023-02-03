@@ -15,6 +15,7 @@ export class Manager extends M {
 
     // }
     const socket = this.socket(nsp, opts)
+
     socket.publicId = nsp
     socket.listen = function bindEventListnerOnSocket(ev, lisnter) {
       if (this.hasListeners(ev)) {
@@ -23,7 +24,6 @@ export class Manager extends M {
       socket.on(ev, lisnter)
       return socket
     }
-
     this.sockets[nsp] = socket
     return socket
   }
