@@ -1,10 +1,10 @@
 import { Manager } from 'libs/Manager'
-import { createContext, FC, ReactNode, useRef } from 'react'
+import { createContext, FC, ReactNode } from 'react'
 import { Socket } from 'socket.io-client'
 
 export const manager = new Manager(import.meta.env.VITE_SOCKET_SERVER_URL, {
   transports: ['websocket'],
-  path: '',
+  multiplex: true,
 })
 
 export const SocketContext = createContext<{

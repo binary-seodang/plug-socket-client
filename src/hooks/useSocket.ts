@@ -9,7 +9,13 @@ interface useSocketProps {
 const useSocket = ({ nsp }: useSocketProps) => {
   const { manager } = useContext(SocketContext)
 
-  const socket = useRef(manager.create_socket(nsp))
+  const socket = useRef(
+    manager.create_socket(nsp, {
+      auth: {
+        token: '123',
+      },
+    }),
+  )
   return {
     manager,
     socket: socket.current,

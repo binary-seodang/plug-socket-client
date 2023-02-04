@@ -5,15 +5,20 @@ import {
   Route,
   createBrowserRouter,
   RouterProvider,
+  Outlet,
 } from 'react-router-dom'
 import Home from 'screen/Home'
+import Login from 'screen/Login'
 import Room from 'screen/Room'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='' element={<SocketLayout />}>
-      <Route index element={<Home />} />
-      <Route path='/:roomName' element={<Room />} />
+    <Route path='' element={<Outlet />}>
+      <Route path='' element={<SocketLayout />}>
+        <Route index element={<Home />} />
+        <Route path='/:roomName' element={<Room />} />
+      </Route>
+      <Route path='login' element={<Login />} />
     </Route>,
   ),
 )
