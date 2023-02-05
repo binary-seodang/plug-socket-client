@@ -1,27 +1,52 @@
-import { SocketContext } from 'context/socketManager'
-import useSocket from 'hooks/useSocket'
-import { useContext, useLayoutEffect, useState } from 'react'
+import { gql, useQuery } from '@apollo/client'
 import { Outlet, useNavigate } from 'react-router-dom'
-import Cookie from 'js-cookie'
-const SocketLayout = () => {
-  const cookie = Cookie.get('_PLUG_AUTH_')
-  const { socket } = useSocket({ nsp: '/' })
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(true)
-  useLayoutEffect(() => {
-    if (socket && cookie) {
-      // socket.emit('set_nickname', nickname, (nickname: string) => {
-      //   if (nickname) {
-      //     localStorage.setItem('plug_nickname', nickname)
-      //   } else {
-      //     // todo
-      //   }
-      // })
-      setLoading(false)
-    } else {
-      navigate('/login')
+import { useClearUser } from 'store/action'
+import store from 'store/index'
+import { GetMeQuery } from '__api__/types'
+
+const GET_ME = gql`
+  query getMe {
+    getMe {
+      ok
+      user {
+        id
+        nickname
+        createdAt
+        updatedAt
+        role
+      }
+      error
     }
-  }, [])
+  }
+`
+
+const SocketLayout = () => {
+  const key = import.meta.env.VITE_AUTH_KEY
+  const token = localStorage.getItem(key) || ''
+
+  const { setUser, clear } = store((state) => ({
+    setUser: state.setUser,
+    clear: state.clear,
+  }))
+  const { data, loading, client } = useQuery<GetMeQuery>(GET_ME, {
+    context: {
+      headers: {
+        [key]: token,
+      },
+    },
+    onCompleted({ getMe: { ok, error, user } }) {
+      if (ok && user) {
+        setUser({ user, token })
+      } else {
+        clear()
+        navigate('/login')
+      }
+    },
+    fetchPolicy: 'no-cache',
+  })
+
+  const navigate = useNavigate()
+
   return <div>{loading ? 'loading...' : <Outlet />}</div>
 }
 

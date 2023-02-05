@@ -105,10 +105,10 @@ const Room = () => {
         setUserList(users)
       })
       socket.emit('join_room', roomName, ({ nickname, userList: users, ok }: Welcome) => {
-        if (!ok) {
-          navigate('/')
-          return
-        }
+        // if (!ok) {
+        //   navigate('/')
+        //   return
+        // }
         !loading && setUserList(users)
       })
 
@@ -143,7 +143,7 @@ const Room = () => {
     <div>
       <video ref={myVideo}></video>
       <video autoPlay ref={peerVideo}></video>
-      {userList.map((user, index) => (
+      {userList?.map((user, index) => (
         <div key={user + '' + index}>
           <span>User : {user}</span>
         </div>

@@ -32,6 +32,10 @@ export default ({ mode }) => {
           find: 'libs',
           replacement: path.resolve(__dirname, 'src/libs'),
         },
+        {
+          find: 'store',
+          replacement: path.resolve(__dirname, 'src/store'),
+        },
       ],
     },
   })

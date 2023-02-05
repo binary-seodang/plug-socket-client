@@ -2,6 +2,7 @@ import useSocket from 'hooks/useSocket'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import store from 'store/index'
 
 interface JoinRoomInput {
   roomName: string
@@ -14,10 +15,11 @@ const Home = () => {
   const { socket } = useSocket({ nsp: '/' })
   const navigate = useNavigate()
   const [rooms, setRooms] = useState<string[] | []>([])
+  const user = store((state) => state.user)
   const { register: roomRegister, handleSubmit: roomSubmit } = useForm<JoinRoomInput>()
   const { register: nicknameRegister, handleSubmit: nicknameSubmit } = useForm<NicknameInput>({
     defaultValues: {
-      nickname: localStorage.getItem('plug_nickname') || '',
+      nickname: user?.nickname,
     },
   })
 
