@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { useContext } from 'react'
 import { SocketContext } from 'context/socketManager'
+import { Socket } from 'socket.io-client'
 
 interface useSocketProps {
   nsp: string
+  onConnect?: (socket: Socket) => void
+  onUnmounted?: (socket: Socket) => void
+  onMounted?: (socket: Socket) => void
 }
 
-const useSocket = ({ nsp }: useSocketProps) => {
+const useSocket = ({ nsp, onConnect, onUnmounted, onMounted }: useSocketProps) => {
   const { manager } = useContext(SocketContext)
   const [isError, setIsError] = useState<string | null>(null)
 
@@ -28,9 +32,18 @@ const useSocket = ({ nsp }: useSocketProps) => {
         if (isError) {
           setIsError(null)
         }
+        onConnect && onConnect(socket.current)
       })
     }
   }, [socket.current, isError])
+  useEffect(() => {
+    if (socket.current) {
+      onMounted && onMounted(socket.current)
+    }
+    return () => {
+      onUnmounted && onUnmounted(socket.current)
+    }
+  }, [socket.current])
   return {
     manager,
     socket: socket.current,
