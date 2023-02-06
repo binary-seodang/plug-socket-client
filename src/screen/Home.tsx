@@ -1,7 +1,8 @@
-import { SocketContext } from 'context/socketManager'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import useSocket from 'hooks/useSocket'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import store from 'store/index'
 
 interface JoinRoomInput {
   roomName: string
@@ -11,17 +12,17 @@ interface NicknameInput {
 }
 
 const Home = () => {
-  const { socket } = useContext(SocketContext)
-
-  useEffect(() => {}, [])
+  const { socket } = useSocket({ nsp: '/' })
+  const navigate = useNavigate()
   const [rooms, setRooms] = useState<string[] | []>([])
+  const user = store((state) => state.user)
   const { register: roomRegister, handleSubmit: roomSubmit } = useForm<JoinRoomInput>()
   const { register: nicknameRegister, handleSubmit: nicknameSubmit } = useForm<NicknameInput>({
     defaultValues: {
-      nickname: localStorage.getItem('plug_nickname') || '',
+      nickname: user?.nickname,
     },
   })
-  const navigate = useNavigate()
+
   const onJoinRoom = useCallback(
     ({ roomName }: JoinRoomInput) => {
       navigate(roomName)
@@ -35,7 +36,7 @@ const Home = () => {
         if (nickname) {
           localStorage.setItem('plug_nickname', nickname)
         } else {
-          // todo
+          // TODO
         }
       })
     },
@@ -43,13 +44,11 @@ const Home = () => {
   )
   useEffect(() => {
     if (socket) {
-      socket.on('room_change', (data) => setRooms(data))
-      if (!socket.connected) {
-        socket.connect()
-      }
+      socket.listen('room_change', (data: any) => {
+        setRooms(data)
+      })
     }
-  }, [socket?.connected])
-
+  }, [rooms, setRooms])
   return (
     <>
       <form onSubmit={nicknameSubmit(onSetNickname)}>

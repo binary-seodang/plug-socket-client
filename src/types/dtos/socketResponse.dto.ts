@@ -1,5 +1,5 @@
 export interface Welcome {
-  nickname: string
-  userList: string[]
-  ok?: boolean
+  joinedUserNickname?: string
+  userList?: string[]
+  ok: boolean
 }

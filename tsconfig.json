@@ -6,6 +6,8 @@
       "context/*" : ["./context/*"],
       "hooks/*" : ["./hooks/*"],
       "layout/*" : ["./layout/*"],
+      "libs/*" : ["./libs/*"],
+      "store/*" : ["./store/*"],
     },
     "target": "ESNext",
     "useDefineForClassFields": true,
